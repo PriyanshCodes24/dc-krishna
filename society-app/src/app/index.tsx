@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const API_URL = "http://192.168.1.9:5000/api/plots"; // Your PC IPv4
+const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/plots`;
 
 interface Plot {
   _id: string;
