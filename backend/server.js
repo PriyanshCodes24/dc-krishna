@@ -12,7 +12,7 @@ app.use("/api/events", require("./routes/events"));
 app.use("/api/receipts", require("./routes/receipts"));
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("MongoDB Connected");
     app.listen(process.env.PORT || 5000, () =>
