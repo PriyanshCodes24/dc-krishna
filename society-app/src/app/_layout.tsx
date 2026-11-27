@@ -106,7 +106,6 @@ function AppTabs() {
           }}
         />
         {/* Hide the unused explore route from the tab bar */}
-        <Tabs.Screen name="explore" options={{ href: null }} />
       </Tabs>
 
       <Modal

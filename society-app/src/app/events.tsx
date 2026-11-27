@@ -91,7 +91,10 @@ export default function EventsScreen() {
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-pin": adminPin,
+        },
         body: JSON.stringify({
           title: title.trim(),
           type,
@@ -101,7 +104,10 @@ export default function EventsScreen() {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to create event");
+      const data = await res.json();
+      if (!res.ok)
+        throw new Error(data.error || data.message || "Failed to create event");
+
       setTitle("");
       setDescription("");
       setEventDate(new Date());
@@ -135,10 +141,9 @@ export default function EventsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
+        <Text style={styles.header}>Meetings & Invites</Text>
         {isAdmin && (
           <>
-            <Text style={styles.header}>Meetings & Invites</Text>
-
             <View style={styles.formCard}>
               <View style={styles.row}>
                 {(["Meeting", "Event"] as const).map((item) => (

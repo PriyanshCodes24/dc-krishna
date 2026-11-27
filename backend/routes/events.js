@@ -21,7 +21,7 @@ router.post("/", requireAdmin, async (req, res) => {
   }
 });
 
-router.patch("/:id/rsvp", requireAdmin, async (req, res) => {
+router.patch("/:id/rsvp", async (req, res) => {
   try {
     const { plotNo } = req.body;
     const event = await Event.findById(req.params.id);
