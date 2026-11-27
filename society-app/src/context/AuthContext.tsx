@@ -21,13 +21,11 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [adminPin, setAdminPin] = useState("");
   const [selectedPlot, setSelectedPlot] = useState<string | null>(null);
+  const baseUrl = (process.env.EXPO_PUBLIC_API_URL || "").replace(/\/+$/, "");
+  fetch(`${baseUrl}/health`).catch(() => {});
 
   const unlockAdmin = async (pin: string): Promise<boolean> => {
     try {
-      const baseUrl = (process.env.EXPO_PUBLIC_API_URL || "").replace(
-        /\/+$/,
-        "",
-      );
       const res = await fetch(`${baseUrl}/auth/verify-pin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

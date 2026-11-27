@@ -5,7 +5,7 @@ const requireAdmin = require("../middleware/adminAuth");
 
 router.get("/", async (req, res) => {
   try {
-    const receipts = await Receipt.find().sort({ createdAt: -1 });
+    const receipts = await Receipt.find().sort({ createdAt: -1 }).lean();
     res.json(receipts);
   } catch (err) {
     res.status(500).json({ error: err.message });

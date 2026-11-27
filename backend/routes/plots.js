@@ -5,7 +5,7 @@ const requireAdmin = require("../middleware/adminAuth");
 
 router.get("/", async (req, res) => {
   try {
-    const plots = await Plot.find().sort({ plotNo: 1 });
+    const plots = await Plot.find().sort({ plotNo: 1 }).lean();
     res.json(plots);
   } catch (err) {
     res.status(500).json({ error: err.message });

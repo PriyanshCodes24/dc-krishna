@@ -11,6 +11,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppInput } from "../components/AppInput";
@@ -32,6 +33,8 @@ interface Plot {
 
 export default function PlotDirectoryScreen() {
   const [plots, setPlots] = useState<Plot[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [wakingUp, setWakingUp] = useState(false);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"ALL" | "OCCUPIED" | "OPEN">("ALL");
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,8 +50,12 @@ export default function PlotDirectoryScreen() {
   const [tenantPhone, setTenantPhone] = useState("");
 
   const fetchPlots = async () => {
+    setLoading(true);
+    setWakingUp(false);
+
+    const slowTimer = setTimeout(() => setWakingUp(true), 3000);
+
     try {
-      console.log("API URL:", process.env.EXPO_PUBLIC_API_URL);
       const url = `${process.env.EXPO_PUBLIC_API_URL}/plots`;
       const response = await fetch(url);
       const rawText = await response.text();
@@ -65,6 +72,10 @@ export default function PlotDirectoryScreen() {
       setPlots(data);
     } catch (error) {
       console.error("Error fetching plots:", error);
+    } finally {
+      clearTimeout(slowTimer);
+      setLoading(false);
+      setWakingUp(false);
     }
   };
 
@@ -125,6 +136,22 @@ export default function PlotDirectoryScreen() {
       return matchesSearch && p.plotStatus.startsWith("Occupied");
     return matchesSearch;
   });
+
+  if (loading && plots.length === 0) {
+    return (
+      <SafeAreaView style={styles.center}>
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text style={styles.loadingTitle}>
+          {wakingUp ? "Waking up society server..." : "Loading plots..."}
+        </Text>
+        {wakingUp && (
+          <Text style={styles.loadingSub}>
+            First load after inactivity takes ~30 seconds. Hang tight!
+          </Text>
+        )}
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -455,5 +482,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 8,
+  },
+  center: {
+    flex: 1,
+    backgroundColor: "#f3f4f6",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+  },
+  loadingTitle: {
+    marginTop: 12,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1f2937",
+  },
+  loadingSub: {
+    marginTop: 6,
+    fontSize: 13,
+    color: "#6b7280",
+    textAlign: "center",
   },
 });
