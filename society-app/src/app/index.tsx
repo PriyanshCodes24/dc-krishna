@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   FlatList,
   StyleSheet,
@@ -12,6 +11,7 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppInput } from "../components/AppInput";
 
 const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/plots`;
 
@@ -44,11 +44,23 @@ export default function PlotDirectoryScreen() {
 
   const fetchPlots = async () => {
     try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
+      console.log("API URL:", process.env.EXPO_PUBLIC_API_URL);
+      const url = `${process.env.EXPO_PUBLIC_API_URL}/plots`;
+      const response = await fetch(url);
+      const rawText = await response.text();
+
+      if (!response.ok) {
+        console.warn(
+          `Server waking up or error (${response.status}):`,
+          rawText.slice(0, 120),
+        );
+        return;
+      }
+
+      const data = JSON.parse(rawText);
       setPlots(data);
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error("Error fetching plots:", error);
     }
   };
 
@@ -119,7 +131,7 @@ export default function PlotDirectoryScreen() {
         </TouchableOpacity>
       </View>
 
-      <TextInput
+      <AppInput
         style={styles.search}
         placeholder="Search by plot no (e.g. 12) or name..."
         value={search}
@@ -206,7 +218,7 @@ export default function PlotDirectoryScreen() {
           <ScrollView contentContainerStyle={styles.modalBox}>
             <Text style={styles.modalTitle}>Add Plot / House</Text>
 
-            <TextInput
+            <AppInput
               style={styles.input}
               placeholder="Plot Number (e.g. 14 or A-5)"
               value={plotNo}
@@ -243,13 +255,13 @@ export default function PlotDirectoryScreen() {
               ))}
             </View>
 
-            <TextInput
+            <AppInput
               style={styles.input}
               placeholder="Owner Full Name"
               value={ownerName}
               onChangeText={setOwnerName}
             />
-            <TextInput
+            <AppInput
               style={styles.input}
               placeholder="Owner Mobile Number"
               keyboardType="phone-pad"
@@ -259,13 +271,13 @@ export default function PlotDirectoryScreen() {
 
             {plotStatus === "Occupied - Tenant" && (
               <>
-                <TextInput
+                <AppInput
                   style={styles.input}
                   placeholder="Tenant Full Name"
                   value={tenantName}
                   onChangeText={setTenantName}
                 />
-                <TextInput
+                <AppInput
                   style={styles.input}
                   placeholder="Tenant Mobile Number"
                   keyboardType="phone-pad"
