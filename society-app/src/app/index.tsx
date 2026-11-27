@@ -9,6 +9,8 @@ import {
   Linking,
   Alert,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppInput } from "../components/AppInput";
@@ -213,95 +215,111 @@ export default function PlotDirectoryScreen() {
       />
 
       {/* Add Plot Modal */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <ScrollView contentContainerStyle={styles.modalBox}>
-            <Text style={styles.modalTitle}>Add Plot / House</Text>
+      <Modal
+        visible={modalVisible}
+        animationType="fade"
+        transparent
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.modalOverlay}
+        >
+          <View style={styles.modalBox}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              <Text style={styles.modalTitle}>Add Plot / House</Text>
 
-            <AppInput
-              style={styles.input}
-              placeholder="Plot Number (e.g. 14 or A-5)"
-              value={plotNo}
-              onChangeText={setPlotNo}
-            />
+              <AppInput
+                style={styles.input}
+                placeholder="Plot Number (e.g. 14 or A-5)"
+                value={plotNo}
+                onChangeText={setPlotNo}
+              />
 
-            <Text style={styles.label}>Plot Status:</Text>
-            <View style={styles.statusSelector}>
-              {(
-                [
-                  "Occupied - Owner",
-                  "Occupied - Tenant",
-                  "Vacant House",
-                  "Open Plot",
-                ] as const
-              ).map((st) => (
-                <TouchableOpacity
-                  key={st}
-                  style={[
-                    styles.statusOption,
-                    plotStatus === st && styles.statusOptionActive,
-                  ]}
-                  onPress={() => setPlotStatus(st)}
-                >
-                  <Text
-                    style={{
-                      color: plotStatus === st ? "#fff" : "#333",
-                      fontSize: 12,
-                    }}
+              <Text style={styles.label}>Plot Status:</Text>
+              <View style={styles.statusSelector}>
+                {(
+                  [
+                    "Occupied - Owner",
+                    "Occupied - Tenant",
+                    "Vacant House",
+                    "Open Plot",
+                  ] as const
+                ).map((st) => (
+                  <TouchableOpacity
+                    key={st}
+                    style={[
+                      styles.statusOption,
+                      plotStatus === st && styles.statusOptionActive,
+                    ]}
+                    onPress={() => setPlotStatus(st)}
                   >
-                    {st}
+                    <Text
+                      style={{
+                        color: plotStatus === st ? "#fff" : "#333",
+                        fontSize: 12,
+                      }}
+                    >
+                      {st}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <AppInput
+                style={styles.input}
+                placeholder="Owner Full Name"
+                value={ownerName}
+                onChangeText={setOwnerName}
+              />
+              <AppInput
+                style={styles.input}
+                placeholder="Owner Mobile Number"
+                keyboardType="phone-pad"
+                value={ownerPhone}
+                onChangeText={setOwnerPhone}
+              />
+
+              {plotStatus === "Occupied - Tenant" && (
+                <>
+                  <AppInput
+                    style={styles.input}
+                    placeholder="Tenant Full Name"
+                    value={tenantName}
+                    onChangeText={setTenantName}
+                  />
+                  <AppInput
+                    style={styles.input}
+                    placeholder="Tenant Mobile Number"
+                    keyboardType="phone-pad"
+                    value={tenantPhone}
+                    onChangeText={setTenantPhone}
+                  />
+                </>
+              )}
+
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={styles.cancelBtn}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.saveBtn}
+                  onPress={handleAddPlot}
+                >
+                  <Text style={{ color: "#fff", fontWeight: "600" }}>
+                    Save Plot
                   </Text>
                 </TouchableOpacity>
-              ))}
-            </View>
-
-            <AppInput
-              style={styles.input}
-              placeholder="Owner Full Name"
-              value={ownerName}
-              onChangeText={setOwnerName}
-            />
-            <AppInput
-              style={styles.input}
-              placeholder="Owner Mobile Number"
-              keyboardType="phone-pad"
-              value={ownerPhone}
-              onChangeText={setOwnerPhone}
-            />
-
-            {plotStatus === "Occupied - Tenant" && (
-              <>
-                <AppInput
-                  style={styles.input}
-                  placeholder="Tenant Full Name"
-                  value={tenantName}
-                  onChangeText={setTenantName}
-                />
-                <AppInput
-                  style={styles.input}
-                  placeholder="Tenant Mobile Number"
-                  keyboardType="phone-pad"
-                  value={tenantPhone}
-                  onChangeText={setTenantPhone}
-                />
-              </>
-            )}
-
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={styles.cancelBtn}
-                onPress={() => setModalVisible(false)}
-              >
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.saveBtn} onPress={handleAddPlot}>
-                <Text style={{ color: "#fff", fontWeight: "600" }}>
-                  Save Plot
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </ScrollView>
-        </View>
+              </View>
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
