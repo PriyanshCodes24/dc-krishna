@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppInput } from "../components/AppInput";
+import { useAuth } from "../context/AuthContext";
 
 const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/plots`;
 
@@ -34,6 +35,7 @@ export default function PlotDirectoryScreen() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"ALL" | "OCCUPIED" | "OPEN">("ALL");
   const [modalVisible, setModalVisible] = useState(false);
+  const { isAdmin, adminPin } = useAuth();
 
   // Form states
   const [plotNo, setPlotNo] = useState("");
@@ -82,7 +84,10 @@ export default function PlotDirectoryScreen() {
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-pin": adminPin,
+        },
         body: JSON.stringify({
           plotNo: plotNo.trim(),
           plotStatus,
@@ -125,12 +130,14 @@ export default function PlotDirectoryScreen() {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerRow}>
         <Text style={styles.header}>Plot Directory ({plots.length})</Text>
-        <TouchableOpacity
-          style={styles.addBtn}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.addBtnText}>+ Add Plot</Text>
-        </TouchableOpacity>
+        {isAdmin && (
+          <TouchableOpacity
+            style={styles.addBtn}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.addBtnText}>+ Add Plot</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <AppInput

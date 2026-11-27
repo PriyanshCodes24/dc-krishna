@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { generateAndShareReceipt, ReceiptData } from "../services/pdfReceipt";
+import { useAuth } from "../context/AuthContext";
 
 const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/receipts`;
 
@@ -19,6 +20,7 @@ interface Receipt extends ReceiptData {
 }
 
 export default function ReceiptsScreen() {
+  const { isAdmin, adminPin } = useAuth();
   const [receipts, setReceipts] = useState<Receipt[]>([]);
   const [plotNo, setPlotNo] = useState("");
   const [payerName, setPayerName] = useState("");
@@ -89,100 +91,103 @@ export default function ReceiptsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        <Text style={styles.header}>Generate Receipt</Text>
-
-        <View style={styles.formCard}>
-          <View style={styles.row}>
-            {(["Maintenance", "Donation"] as const).map((cat) => (
-              <TouchableOpacity
-                key={cat}
-                style={[styles.pill, category === cat && styles.pillActive]}
-                onPress={() => {
-                  setCategory(cat);
-                  setPurpose(
-                    cat === "Maintenance"
-                      ? "Annual Maintenance 2026"
-                      : "Festival / Temple Fund",
-                  );
-                }}
-              >
-                <Text
-                  style={[
-                    styles.pillText,
-                    category === cat && styles.pillTextActive,
-                  ]}
-                >
-                  {cat}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Plot No (e.g. 14 or A-5)"
-            value={plotNo}
-            onChangeText={setPlotNo}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Received From (Name)"
-            value={payerName}
-            onChangeText={setPayerName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Purpose"
-            value={purpose}
-            onChangeText={setPurpose}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Amount (₹)"
-            keyboardType="numeric"
-            value={amount}
-            onChangeText={setAmount}
-          />
-
-          <View style={styles.row}>
-            {(["UPI", "Cash", "Cheque", "Bank Transfer"] as const).map(
-              (mode) => (
-                <TouchableOpacity
-                  key={mode}
-                  style={[
-                    styles.modeBtn,
-                    paymentMode === mode && styles.modeBtnActive,
-                  ]}
-                  onPress={() => setPaymentMode(mode)}
-                >
-                  <Text
-                    style={{
-                      color: paymentMode === mode ? "#fff" : "#374151",
-                      fontSize: 12,
-                      fontWeight: "600",
+        {isAdmin && (
+          <>
+            <Text style={styles.header}>Generate Receipt</Text>
+            <View style={styles.formCard}>
+              <View style={styles.row}>
+                {(["Maintenance", "Donation"] as const).map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[styles.pill, category === cat && styles.pillActive]}
+                    onPress={() => {
+                      setCategory(cat);
+                      setPurpose(
+                        cat === "Maintenance"
+                          ? "Annual Maintenance 2026"
+                          : "Festival / Temple Fund",
+                      );
                     }}
                   >
-                    {mode}
-                  </Text>
-                </TouchableOpacity>
-              ),
-            )}
-          </View>
+                    <Text
+                      style={[
+                        styles.pillText,
+                        category === cat && styles.pillTextActive,
+                      ]}
+                    >
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
-          <TextInput
-            style={styles.input}
-            placeholder="UPI Ref / Cheque No (Optional)"
-            value={transactionRef}
-            onChangeText={setTransactionRef}
-          />
+              <TextInput
+                style={styles.input}
+                placeholder="Plot No (e.g. 14 or A-5)"
+                value={plotNo}
+                onChangeText={setPlotNo}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Received From (Name)"
+                value={payerName}
+                onChangeText={setPayerName}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Purpose"
+                value={purpose}
+                onChangeText={setPurpose}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Amount (₹)"
+                keyboardType="numeric"
+                value={amount}
+                onChangeText={setAmount}
+              />
 
-          <TouchableOpacity
-            style={styles.submitBtn}
-            onPress={handleCreateAndShare}
-          >
-            <Text style={styles.submitText}>Save & Share PDF Receipt</Text>
-          </TouchableOpacity>
-        </View>
+              <View style={styles.row}>
+                {(["UPI", "Cash", "Cheque", "Bank Transfer"] as const).map(
+                  (mode) => (
+                    <TouchableOpacity
+                      key={mode}
+                      style={[
+                        styles.modeBtn,
+                        paymentMode === mode && styles.modeBtnActive,
+                      ]}
+                      onPress={() => setPaymentMode(mode)}
+                    >
+                      <Text
+                        style={{
+                          color: paymentMode === mode ? "#fff" : "#374151",
+                          fontSize: 12,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {mode}
+                      </Text>
+                    </TouchableOpacity>
+                  ),
+                )}
+              </View>
+
+              <TextInput
+                style={styles.input}
+                placeholder="UPI Ref / Cheque No (Optional)"
+                value={transactionRef}
+                onChangeText={setTransactionRef}
+              />
+
+              <TouchableOpacity
+                style={styles.submitBtn}
+                onPress={handleCreateAndShare}
+              >
+                <Text style={styles.submitText}>Save & Share PDF Receipt</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        )}
 
         <Text style={styles.subHeader}>
           Recent Receipts ({receipts.length})

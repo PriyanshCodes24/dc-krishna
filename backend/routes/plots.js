@@ -1,6 +1,7 @@
 const express = require("express");
 const Plot = require("../models/Plot");
 const router = express.Router();
+const requireAdmin = require("../middleware/adminAuth");
 
 router.get("/", async (req, res) => {
   try {
@@ -11,7 +12,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", requireAdmin, async (req, res) => {
   try {
     const plot = await Plot.create(req.body);
     res.status(201).json(plot);
@@ -20,7 +21,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireAdmin, async (req, res) => {
   try {
     const updated = await Plot.findByIdAndUpdate(req.params.id, req.body, {
       new: true,

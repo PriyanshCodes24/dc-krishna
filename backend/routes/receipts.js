@@ -1,8 +1,9 @@
-const express = require('express');
-const Receipt = require('../models/Receipt');
+const express = require("express");
+const Receipt = require("../models/Receipt");
 const router = express.Router();
+const requireAdmin = require("../middleware/adminAuth");
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const receipts = await Receipt.find().sort({ createdAt: -1 });
     res.json(receipts);
@@ -11,11 +12,11 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post("/", requireAdmin, async (req, res) => {
   try {
     const count = await Receipt.countDocuments();
     const year = new Date().getFullYear();
-    const receiptNo = `RCP-${year}-${String(count + 1).padStart(3, '0')}`;
+    const receiptNo = `RCP-${year}-${String(count + 1).padStart(3, "0")}`;
 
     const receipt = await Receipt.create({ ...req.body, receiptNo });
     res.status(201).json(receipt);

@@ -1,6 +1,7 @@
 const express = require("express");
 const Event = require("../models/Event");
 const router = express.Router();
+const requireAdmin = require("../middleware/adminAuth");
 
 router.get("/", async (req, res) => {
   try {
@@ -11,7 +12,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/", async (req, res) => {
+router.post("/", requireAdmin, async (req, res) => {
   try {
     const event = await Event.create(req.body);
     res.status(201).json(event);
@@ -20,7 +21,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.patch("/:id/rsvp", async (req, res) => {
+router.patch("/:id/rsvp", requireAdmin, async (req, res) => {
   try {
     const { plotNo } = req.body;
     const event = await Event.findById(req.params.id);

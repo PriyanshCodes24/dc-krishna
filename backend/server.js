@@ -10,6 +10,15 @@ app.use(express.json());
 app.use("/api/plots", require("./routes/plots"));
 app.use("/api/events", require("./routes/events"));
 app.use("/api/receipts", require("./routes/receipts"));
+app.post("/api/auth/verify-pin", (req, res) => {
+  const { pin } = req.body;
+  if (pin && pin === process.env.ADMIN_PIN) {
+    return res.json({ valid: true });
+  }
+  return res
+    .status(401)
+    .json({ valid: false, message: "Incorrect Committee PIN" });
+});
 
 mongoose
   .connect(process.env.MONGODB_URI)
