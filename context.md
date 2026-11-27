@@ -4,14 +4,14 @@
 A mobile-first residential society management app built with the MERN stack + Expo (TypeScript).
 - **Core V1 Features:**
   1. **Plots Directory:** Track plot/house numbers, resident/owner details, occupancy status, and contact info.
-  2. **Meetings & Event Invites:** Publish society meetings/events, toggle plot-level RSVPs, and schedule local phone reminders.
+  2. **Meetings & Event Invites:** Publish society meetings/events with native calendar & time selection, toggle plot-level RSVPs, and schedule local phone reminders.
   3. **Maintenance & Donation Receipts:** Record payments, generate formatted HTML-to-PDF receipts (`RCP-YYYY-NNN`), and share directly via WhatsApp/system share sheet.
 
 ---
 
 ## 2. Tech Stack & Services
 - **Frontend:** React Native, Expo SDK 58 (`expo-router`), TypeScript
-  - **Key Packages:** `expo-print`, `expo-sharing`, `expo-file-system`, `expo-notifications`, `expo-updates`, `expo-constants`, `@expo/vector-icons`
+  - **Key Packages:** `expo-print`, `expo-sharing`, `expo-file-system`, `expo-notifications`, `expo-updates`, `expo-constants`, `@expo/vector-icons`, `@react-native-community/datetimepicker`
 - **Backend:** Node.js, Express.js, Mongoose
 - **Database:** MongoDB Atlas
 - **Hosting & Builds:**
@@ -44,51 +44,73 @@ DC-Krishna/
         ├── app/
         │   ├── _layout.tsx     # Bottom tab navigation (Plots, Invites, Receipts)
         │   ├── index.tsx       # Plots screen
-        │   ├── events.tsx      # Meetings & Invites screen
+        │   ├── events.tsx      # Meetings & Invites screen (with field labels & native DateTimePicker)
         │   └── receipts.tsx    # Receipts generation & history screen
         └── services/
             ├── pdfReceipt.ts   # Base64 HTML-to-PDF generation + cache write + share sheet
             └── reminders.ts    # Local scheduled notifications with Expo Go safe fallback
 
-4. Feature Ownership (Vertical Slices)
-    Plots & Receipts (Priyansh):
+```
 
-    backend/models/Plot.js, backend/routes/plots.js, society-app/src/app/index.tsx
+---
 
-    backend/models/Receipt.js, backend/routes/receipts.js, society-app/src/app/receipts.tsx, society-app/src/services/pdfReceipt.ts
+## 4. Feature Ownership (Vertical Slices)
 
-    Meetings & Event Invites (Collaborator):
+* **Plots & Receipts (Priyansh):**
+* `backend/models/Plot.js`, `backend/routes/plots.js`, `society-app/src/app/index.tsx`
+* `backend/models/Receipt.js`, `backend/routes/receipts.js`, `society-app/src/app/receipts.tsx`, `society-app/src/services/pdfReceipt.ts`
 
-    backend/models/Event.js, backend/routes/events.js, society-app/src/app/events.tsx, society-app/src/services/reminders.ts
 
-    Shared Files (Coordinate before editing):
+* **Meetings & Event Invites (Dhruval):**
+* `backend/models/Event.js`, `backend/routes/events.js`, `society-app/src/app/events.tsx`, `society-app/src/services/reminders.ts`
 
-    society-app/src/app/_layout.tsx, backend/server.js, society-app/app.json, society-app/eas.json
 
-5. Technical Quirks & Conventions
-    PDF Generation (pdfReceipt.ts): Uses Print.printToFileAsync({ html, base64: true }) and writes via expo-file-system/legacy to FileSystem.cacheDirectory so sharing works identically in both Expo Go and standalone APKs.
+* **Shared Files (Coordinate before editing):**
+* `society-app/src/app/_layout.tsx`, `backend/server.js`, `society-app/app.json`, `society-app/eas.json`
 
-    Notifications (reminders.ts): Custom Android notification channels are skipped inside Expo Go (Constants.appOwnership === 'expo') to avoid NullPointerException, and enabled automatically in standalone EAS APK builds.
 
-    Environment Variables: society-app/.env is gitignored. Every collaborator must create society-app/.env locally with EXPO_PUBLIC_API_URL=https://dc-krishna.onrender.com/api.
 
-6. Common Commands
-    Run app locally (Expo Go):
+---
 
-    Bash
-    cd society-app && npx expo start
-    Push live JS/UI updates to installed APKs (OTA):
+## 5. Technical Quirks & Conventions
 
-    Bash
-    cd society-app && npx eas-cli update --branch preview --message "Describe change"
-    Build a new Android APK (only needed when adding native packages or editing app.json):
+* **Native Date & Time Picker (`events.tsx`):** Uses `@react-native-community/datetimepicker` with `minimumDate={new Date()}`. Because this adds native Android code, a fresh EAS APK build (`eas build -p android --profile preview`) is required before pushing future OTA updates to standalone APKs.
+* **PDF Generation (`pdfReceipt.ts`):** Uses `Print.printToFileAsync({ html, base64: true })` and writes via `expo-file-system/legacy` to `FileSystem.cacheDirectory` so sharing works identically in both Expo Go and standalone APKs.
+* **Notifications (`reminders.ts`):** Custom Android notification channels are skipped inside Expo Go (`Constants.appOwnership === 'expo'`) to avoid `NullPointerException`, and enabled automatically in standalone EAS APK builds.
+* **Environment Variables:** `society-app/.env` is gitignored. Every collaborator must create `society-app/.env` locally with `EXPO_PUBLIC_API_URL=https://dc-krishna.onrender.com/api`.
 
-    Bash
-    cd society-app && npx eas-cli build -p android --profile preview
+---
 
-    Save that as **`CONTEXT.md`** in `D:\Projects\DC-Krishna\`, commit, and push it to `main`:
+## 6. Common Commands
 
-    ```bash
-    git add CONTEXT.md
-    git commit -m "Add project CONTEXT.md for collaboration"
-    git push origin main
+* **Run app locally (Expo Go):**
+```bash
+cd society-app && npx expo start
+
+```
+
+
+* **Push live JS/UI updates to installed APKs (OTA):**
+```bash
+cd society-app && npx eas-cli update --branch preview --message "Describe change"
+
+```
+
+
+* **Build a new Android APK (needed when adding native packages like datetimepicker or editing app.json):**
+```bash
+cd society-app && npx eas-cli build -p android --profile preview
+
+```
+
+
+
+```
+
+Commit and push the updated file:
+```bash
+git add CONTEXT.md
+git commit -m "docs: update CONTEXT.md with native datetimepicker and APK rebuild note"
+git push origin main
+
+```
