@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { API_BASE_URL } from "../config/api";
 
 interface AuthContextType {
   isAdmin: boolean;
@@ -21,23 +22,28 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [adminPin, setAdminPin] = useState("");
   const [selectedPlot, setSelectedPlot] = useState<string | null>(null);
-  const baseUrl = (process.env.EXPO_PUBLIC_API_URL || "").replace(/\/+$/, "");
-  fetch(`${baseUrl}/health`).catch(() => {});
+  const baseUrl = API_BASE_URL.replace(/\/+$/, "");
+
+  useEffect(() => {
+    fetch(`${baseUrl}/health`).catch(() => {});
+  }, [baseUrl]);
 
   const unlockAdmin = async (pin: string): Promise<boolean> => {
+    const cleanPin = pin.trim();
     try {
       const res = await fetch(`${baseUrl}/auth/verify-pin`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pin }),
+        body: JSON.stringify({ pin: cleanPin }),
       });
 
       if (res.ok) {
-        setAdminPin(pin);
+        setAdminPin(cleanPin);
         return true;
       }
       return false;
-    } catch {
+    } catch (err) {
+      console.error("PIN verify network error:", err);
       return false;
     }
   };

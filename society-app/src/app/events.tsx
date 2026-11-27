@@ -16,8 +16,10 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import { scheduleEventReminder } from "../services/reminders";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../config/api";
 
-const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/events`;
+// Example in index.tsx:
+const API_URL = `${API_BASE_URL}/events`;
 
 interface SocietyEvent {
   _id: string;

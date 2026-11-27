@@ -16,8 +16,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppInput } from "../components/AppInput";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../config/api";
 
-const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/plots`;
+// Example in index.tsx:
+const API_URL = `${API_BASE_URL}/plots`;
 
 interface Plot {
   _id: string;
@@ -56,7 +58,7 @@ export default function PlotDirectoryScreen() {
     const slowTimer = setTimeout(() => setWakingUp(true), 3000);
 
     try {
-      const url = `${process.env.EXPO_PUBLIC_API_URL}/plots`;
+      const url = `${API_BASE_URL}/plots`;
       const response = await fetch(url);
       const rawText = await response.text();
 

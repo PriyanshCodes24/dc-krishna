@@ -13,7 +13,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { generateAndShareReceipt, ReceiptData } from "../services/pdfReceipt";
 import { useAuth } from "../context/AuthContext";
 
-const API_URL = `${process.env.EXPO_PUBLIC_API_URL}/receipts`;
+import { API_BASE_URL } from "../config/api";
+
+// Example in index.tsx:
+const API_URL = `${API_BASE_URL}/receipts`;
 
 interface Receipt extends ReceiptData {
   _id: string;
