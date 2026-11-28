@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { normalizePlotNo } = require("../utils/plotHelper");
 
 const plotSchema = new mongoose.Schema(
   {
@@ -34,8 +35,20 @@ const plotSchema = new mongoose.Schema(
 
     familyMembers: [{ name: String, relation: String, phone: String }],
     vehicles: [{ type: String, uppercase: true }],
+
+    passwordHash: {
+      type: String,
+      default: null,
+      select: false,
+    },
   },
   { timestamps: true },
 );
+
+plotSchema.pre("save", function () {
+  if (this.plotNo) {
+    this.plotNo = normalizePlotNo(this.plotNo);
+  }
+});
 
 module.exports = mongoose.model("Plot", plotSchema);

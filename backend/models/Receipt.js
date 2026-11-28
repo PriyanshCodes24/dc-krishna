@@ -13,7 +13,7 @@ const receiptSchema = new mongoose.Schema(
     purpose: { type: String, required: true, trim: true },
     amount: { type: Number, required: true },
     paymentMode: {
-      type: String,
+    type: String,
       enum: ["UPI", "Cash", "Cheque", "Bank Transfer"],
       default: "UPI",
     },

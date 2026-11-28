@@ -63,7 +63,10 @@ export default function ReceiptsScreen() {
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-pin": adminPin,
+        },
         body: JSON.stringify({
           plotNo: plotNo.trim(),
           payerName: payerName.trim(),
