@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Tabs } from "expo-router";
 import {
   TouchableOpacity,
@@ -13,6 +13,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { AuthProvider, useAuth } from "../context/AuthContext";
 import { AppInput } from "../components/AppInput";
+import { colors, spacing, radius } from "../theme";
 
 function AppTabs() {
   const { isAdmin, unlockAdmin, lockAdmin } = useAuth();
@@ -48,7 +49,7 @@ function AppTabs() {
     <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#2563EB",
+          tabBarActiveTintColor: colors.accent,
           headerRight: () => (
             <TouchableOpacity
               onPress={handleTogglePress}
@@ -57,7 +58,7 @@ function AppTabs() {
               <Ionicons
                 name={isAdmin ? "lock-open" : "lock-closed"}
                 size={16}
-                color={isAdmin ? "#16A34A" : "#64748B"}
+                color={isAdmin ? colors.success : colors.muted}
               />
               <Text style={[styles.lockText, isAdmin && styles.lockTextActive]}>
                 {isAdmin ? "Admin" : "Resident"}
@@ -105,7 +106,6 @@ function AppTabs() {
             ),
           }}
         />
-        {/* Hide the unused explore route from the tab bar */}
       </Tabs>
 
       <Modal
@@ -139,14 +139,14 @@ function AppTabs() {
                 style={styles.cancelBtn}
                 onPress={() => setPinModalVisible(false)}
               >
-                <Text style={{ color: "#475569" }}>Cancel</Text>
+                <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.unlockBtn}
                 onPress={handleUnlock}
                 disabled={checking}
               >
-                <Text style={{ color: "#fff", fontWeight: "600" }}>
+                <Text style={styles.unlockText}>
                   {checking ? "Checking..." : "Unlock"}
                 </Text>
               </TouchableOpacity>
@@ -174,11 +174,17 @@ const styles = StyleSheet.create({
     marginRight: 14,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 20,
-    backgroundColor: "#F1F5F9",
+    borderRadius: radius.full,
+    backgroundColor: colors.bg,
   },
-  lockText: { fontSize: 12, fontWeight: "600", color: "#64748B" },
-  lockTextActive: { color: "#16A34A" },
+  lockText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.muted,
+  },
+  lockTextActive: {
+    color: colors.success,
+  },
   overlay: {
     flex: 1,
     backgroundColor: "rgba(15, 23, 42, 0.55)",
@@ -189,23 +195,43 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 380,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
     padding: 20,
   },
-  title: { fontSize: 18, fontWeight: "700", color: "#0F172A", marginBottom: 4 },
-  subtitle: { fontSize: 13, color: "#64748B", marginBottom: 14 },
+  title: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: colors.muted,
+    marginBottom: 14,
+  },
   row: {
     flexDirection: "row",
     justifyContent: "flex-end",
     gap: 10,
-    marginTop: 16,
+    marginTop: spacing.sm,
   },
-  cancelBtn: { paddingVertical: 10, paddingHorizontal: 14 },
+  cancelBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+  },
+  cancelText: {
+    color: colors.textSecondary,
+    fontWeight: "600",
+  },
   unlockBtn: {
-    backgroundColor: "#2563EB",
+    backgroundColor: colors.accent,
     paddingVertical: 10,
     paddingHorizontal: 18,
-    borderRadius: 10,
+    borderRadius: radius.md,
+  },
+  unlockText: {
+    color: colors.card,
+    fontWeight: "600",
   },
 });

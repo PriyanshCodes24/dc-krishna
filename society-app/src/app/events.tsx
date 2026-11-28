@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   FlatList,
   StyleSheet,
@@ -17,8 +16,9 @@ import DateTimePicker, {
 import { scheduleEventReminder } from "../services/reminders";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
+import { colors, spacing, radius, sharedStyles } from "../theme";
+import { AppInput } from "../components/AppInput";
 
-// Example in index.tsx:
 const API_URL = `${API_BASE_URL}/events`;
 
 interface SocietyEvent {
@@ -141,129 +141,122 @@ export default function EventsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={sharedStyles.screenContainer}>
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         <Text style={styles.header}>Meetings & Invites</Text>
+
         {isAdmin && (
-          <>
-            <View style={styles.formCard}>
-              <View style={styles.row}>
-                {(["Meeting", "Event"] as const).map((item) => (
-                  <TouchableOpacity
-                    key={item}
-                    style={[styles.pill, type === item && styles.pillActive]}
-                    onPress={() => setType(item)}
+          <View style={sharedStyles.card}>
+            <View style={styles.row}>
+              {(["Meeting", "Event"] as const).map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  style={[styles.pill, type === item && styles.pillActive]}
+                  onPress={() => setType(item)}
+                >
+                  <Text
+                    style={[
+                      styles.pillText,
+                      type === item && styles.pillTextActive,
+                    ]}
                   >
-                    <Text
-                      style={[
-                        styles.pillText,
-                        type === item && styles.pillTextActive,
-                      ]}
-                    >
-                      {item}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <Text style={styles.label}>Title</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Monthly Committee Meeting"
-                placeholderTextColor="#9ca3af"
-                value={title}
-                onChangeText={setTitle}
-              />
-
-              <Text style={styles.label}>Agenda / Description</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Discuss water tank cleaning & security"
-                placeholderTextColor="#9ca3af"
-                value={description}
-                onChangeText={setDescription}
-                multiline
-              />
-
-              <Text style={styles.label}>Venue</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="e.g. Society Common Plot"
-                placeholderTextColor="#9ca3af"
-                value={venue}
-                onChangeText={setVenue}
-              />
-
-              <Text style={styles.label}>Date & Time</Text>
-              <View style={styles.row}>
-                <TouchableOpacity
-                  style={styles.pickerBtn}
-                  onPress={() => setShowDatePicker(true)}
-                >
-                  <Text style={styles.pickerText}>
-                    📅{" "}
-                    {eventDate.toLocaleDateString("en-IN", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {item}
                   </Text>
                 </TouchableOpacity>
+              ))}
+            </View>
 
-                <TouchableOpacity
-                  style={styles.pickerBtn}
-                  onPress={() => setShowTimePicker(true)}
-                >
-                  <Text style={styles.pickerText}>
-                    ⏰{" "}
-                    {eventDate.toLocaleTimeString("en-IN", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+            <Text style={sharedStyles.label}>Title</Text>
+            <AppInput
+              placeholder="e.g. Monthly Committee Meeting"
+              value={title}
+              onChangeText={setTitle}
+            />
 
-              {showDatePicker && (
-                <DateTimePicker
-                  value={eventDate}
-                  mode="date"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  minimumDate={new Date()}
-                  onChange={onChangeDate}
-                />
-              )}
+            <Text style={sharedStyles.label}>Agenda / Description</Text>
+            <AppInput
+              placeholder="e.g. Discuss water tank cleaning & security"
+              value={description}
+              onChangeText={setDescription}
+              multiline
+            />
 
-              {showTimePicker && (
-                <DateTimePicker
-                  value={eventDate}
-                  mode="time"
-                  display={Platform.OS === "ios" ? "spinner" : "default"}
-                  onChange={onChangeTime}
-                />
-              )}
+            <Text style={sharedStyles.label}>Venue</Text>
+            <AppInput
+              placeholder="e.g. Society Common Plot"
+              value={venue}
+              onChangeText={setVenue}
+            />
+
+            <Text style={sharedStyles.label}>Date & Time</Text>
+            <View style={styles.row}>
+              <TouchableOpacity
+                style={styles.pickerBtn}
+                onPress={() => setShowDatePicker(true)}
+              >
+                <Text style={styles.pickerText}>
+                  📅{" "}
+                  {eventDate.toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </Text>
+              </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.submitBtn}
-                onPress={handleCreateEvent}
+                style={styles.pickerBtn}
+                onPress={() => setShowTimePicker(true)}
               >
-                <Text style={styles.submitText}>Publish Invite</Text>
+                <Text style={styles.pickerText}>
+                  ⏰{" "}
+                  {eventDate.toLocaleTimeString("en-IN", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </Text>
               </TouchableOpacity>
             </View>
 
-            <View style={styles.rsvpBar}>
-              <Text style={styles.rsvpLabel}>Your Plot No for RSVP:</Text>
-              <TextInput
-                style={styles.rsvpInput}
-                placeholder="e.g. B113"
-                placeholderTextColor="#9ca3af"
-                value={rsvpPlot}
-                onChangeText={setRsvpPlot}
-                autoCapitalize="characters"
+            {showDatePicker && (
+              <DateTimePicker
+                value={eventDate}
+                mode="date"
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                minimumDate={new Date()}
+                onChange={onChangeDate}
               />
-            </View>
-          </>
+            )}
+
+            {showTimePicker && (
+              <DateTimePicker
+                value={eventDate}
+                mode="time"
+                display={Platform.OS === "ios" ? "spinner" : "default"}
+                onChange={onChangeTime}
+              />
+            )}
+
+            <TouchableOpacity
+              style={sharedStyles.primaryBtn}
+              onPress={handleCreateEvent}
+            >
+              <Text style={sharedStyles.primaryBtnText}>Publish Invite</Text>
+            </TouchableOpacity>
+          </View>
         )}
+
+        <View style={[sharedStyles.card, styles.rsvpBar]}>
+          <Text style={styles.rsvpLabel}>Your Plot No for RSVP:</Text>
+          <AppInput
+            style={styles.rsvpInput}
+            placeholder="e.g. B113"
+            value={rsvpPlot}
+            onChangeText={setRsvpPlot}
+            autoCapitalize="characters"
+          />
+        </View>
+
         <FlatList
           data={events}
           scrollEnabled={false}
@@ -275,7 +268,7 @@ export default function EventsScreen() {
               item.attendingPlots.includes(rsvpPlot.trim().toUpperCase());
 
             return (
-              <View style={styles.eventCard}>
+              <View style={sharedStyles.card}>
                 <View style={styles.cardHeader}>
                   <Text style={styles.badge}>{item.type}</Text>
                   <Text style={styles.dateText}>
@@ -312,7 +305,7 @@ export default function EventsScreen() {
                   >
                     <Text
                       style={{
-                        color: isAttending ? "#fff" : "#1e3a8a",
+                        color: isAttending ? colors.card : colors.primary,
                         fontWeight: "600",
                       }}
                     >
@@ -343,120 +336,131 @@ export default function EventsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f3f4f6", paddingHorizontal: 14 },
   header: {
     fontSize: 22,
     fontWeight: "700",
-    marginVertical: 12,
-    color: "#111",
+    marginVertical: spacing.md,
+    color: colors.text,
   },
-  formCard: { backgroundColor: "#fff", padding: 14, borderRadius: 12 },
-  row: { flexDirection: "row", gap: 8, marginBottom: 10 },
+  row: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
   pill: {
     flex: 1,
     backgroundColor: "#e5e7eb",
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
     alignItems: "center",
   },
-  pillActive: { backgroundColor: "#1e3a8a" },
-  pillText: { fontWeight: "600", color: "#374151" },
-  pillTextActive: { color: "#fff" },
-  label: { fontSize: 13, fontWeight: "600", color: "#374151", marginBottom: 4 },
-  input: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-    color: "#111827",
+  pillActive: {
+    backgroundColor: colors.primary,
+  },
+  pillText: {
+    fontWeight: "600",
+    color: colors.textSecondary,
+  },
+  pillTextActive: {
+    color: colors.card,
   },
   pickerBtn: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
+    borderColor: colors.border,
+    borderRadius: radius.md,
     paddingVertical: 11,
-    paddingHorizontal: 10,
-    backgroundColor: "#f9fafb",
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.inputBg,
     alignItems: "center",
   },
-  pickerText: { fontSize: 14, fontWeight: "600", color: "#111827" },
-  submitBtn: {
-    backgroundColor: "#1e3a8a",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
+  pickerText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: colors.text,
   },
-  submitText: { color: "#fff", fontWeight: "700", fontSize: 15 },
   rsvpBar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#fff",
-    padding: 12,
-    borderRadius: 10,
-    marginTop: 14,
-    marginBottom: 10,
+    paddingVertical: spacing.md,
   },
-  rsvpLabel: { fontWeight: "600", color: "#111" },
+  rsvpLabel: {
+    fontWeight: "600",
+    color: colors.text,
+  },
   rsvpInput: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
     width: 110,
+    marginBottom: 0,
+    paddingVertical: 6,
     textAlign: "center",
     fontWeight: "700",
-    color: "#111827",
-  },
-  eventCard: {
-    backgroundColor: "#fff",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 10,
   },
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 6,
+    marginBottom: spacing.xs,
   },
   badge: {
-    backgroundColor: "#dbeafe",
-    color: "#1e40af",
-    paddingHorizontal: 8,
+    backgroundColor: colors.primaryLight,
+    color: colors.primary,
+    paddingHorizontal: spacing.sm,
     paddingVertical: 2,
-    borderRadius: 6,
+    borderRadius: radius.sm,
     fontSize: 12,
     fontWeight: "700",
   },
-  dateText: { color: "#4b5563", fontSize: 13, fontWeight: "600" },
-  eventTitle: { fontSize: 17, fontWeight: "700", color: "#111" },
-  venue: { fontSize: 13, color: "#4b5563", marginTop: 2 },
-  desc: { fontSize: 14, color: "#374151", marginTop: 6 },
+  dateText: {
+    color: colors.muted,
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  eventTitle: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: colors.text,
+  },
+  venue: {
+    fontSize: 13,
+    color: colors.muted,
+    marginTop: 2,
+  },
+  desc: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: spacing.xs,
+  },
   attendingText: {
     fontSize: 12,
-    color: "#16a34a",
+    color: colors.success,
     fontWeight: "600",
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
-  actionRow: { flexDirection: "row", gap: 10, marginTop: 10 },
+  actionRow: {
+    flexDirection: "row",
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
   rsvpBtn: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#1e3a8a",
-    paddingVertical: 8,
-    borderRadius: 8,
+    borderColor: colors.primary,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
     alignItems: "center",
   },
-  rsvpBtnActive: { backgroundColor: "#1e3a8a" },
+  rsvpBtnActive: {
+    backgroundColor: colors.primary,
+  },
   remindBtn: {
     flex: 1,
-    backgroundColor: "#fef3c7",
-    paddingVertical: 8,
-    borderRadius: 8,
+    backgroundColor: colors.warningLight,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
     alignItems: "center",
   },
-  remindText: { color: "#92400e", fontWeight: "600" },
+  remindText: {
+    color: colors.warning,
+    fontWeight: "600",
+  },
 });

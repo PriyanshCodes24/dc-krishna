@@ -17,8 +17,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AppInput } from "../components/AppInput";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../config/api";
+import { colors, spacing, radius, sharedStyles } from "../theme";
 
-// Example in index.tsx:
 const API_URL = `${API_BASE_URL}/plots`;
 
 interface Plot {
@@ -156,7 +156,7 @@ export default function PlotDirectoryScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={sharedStyles.screenContainer}>
       <View style={styles.headerRow}>
         <Text style={styles.header}>Plot Directory ({plots.length})</Text>
         {isAdmin && (
@@ -209,7 +209,7 @@ export default function PlotDirectoryScreen() {
               : item.owner.phone;
 
           return (
-            <View style={styles.card}>
+            <View style={sharedStyles.card}>
               <View style={styles.cardTop}>
                 <Text style={styles.plotBadge}>Plot {item.plotNo}</Text>
                 <View
@@ -269,13 +269,12 @@ export default function PlotDirectoryScreen() {
               <Text style={styles.modalTitle}>Add Plot / House</Text>
 
               <AppInput
-                style={styles.input}
                 placeholder="Plot Number (e.g. 14 or A-5)"
                 value={plotNo}
                 onChangeText={setPlotNo}
               />
 
-              <Text style={styles.label}>Plot Status:</Text>
+              <Text style={sharedStyles.label}>Plot Status:</Text>
               <View style={styles.statusSelector}>
                 {(
                   [
@@ -295,8 +294,12 @@ export default function PlotDirectoryScreen() {
                   >
                     <Text
                       style={{
-                        color: plotStatus === st ? "#fff" : "#333",
+                        color:
+                          plotStatus === st
+                            ? colors.card
+                            : colors.textSecondary,
                         fontSize: 12,
+                        fontWeight: "600",
                       }}
                     >
                       {st}
@@ -306,13 +309,11 @@ export default function PlotDirectoryScreen() {
               </View>
 
               <AppInput
-                style={styles.input}
                 placeholder="Owner Full Name"
                 value={ownerName}
                 onChangeText={setOwnerName}
               />
               <AppInput
-                style={styles.input}
                 placeholder="Owner Mobile Number"
                 keyboardType="phone-pad"
                 value={ownerPhone}
@@ -322,13 +323,11 @@ export default function PlotDirectoryScreen() {
               {plotStatus === "Occupied - Tenant" && (
                 <>
                   <AppInput
-                    style={styles.input}
                     placeholder="Tenant Full Name"
                     value={tenantName}
                     onChangeText={setTenantName}
                   />
                   <AppInput
-                    style={styles.input}
                     placeholder="Tenant Mobile Number"
                     keyboardType="phone-pad"
                     value={tenantPhone}
@@ -342,15 +341,13 @@ export default function PlotDirectoryScreen() {
                   style={styles.cancelBtn}
                   onPress={() => setModalVisible(false)}
                 >
-                  <Text>Cancel</Text>
+                  <Text style={styles.cancelText}>Cancel</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.saveBtn}
                   onPress={handleAddPlot}
                 >
-                  <Text style={{ color: "#fff", fontWeight: "600" }}>
-                    Save Plot
-                  </Text>
+                  <Text style={styles.saveBtnText}>Save Plot</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>
@@ -362,73 +359,114 @@ export default function PlotDirectoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f3f4f6", paddingHorizontal: 14 },
   headerRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 12,
+    marginVertical: spacing.md,
   },
-  header: { fontSize: 22, fontWeight: "700", color: "#111" },
+  header: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: colors.text,
+  },
   addBtn: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.accent,
     paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
   },
-  addBtnText: { color: "#fff", fontWeight: "600" },
+  addBtnText: {
+    color: colors.card,
+    fontWeight: "600",
+  },
   search: {
-    backgroundColor: "#fff",
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
-    fontSize: 15,
+    backgroundColor: colors.card,
+    marginBottom: spacing.md,
   },
-  filterRow: { flexDirection: "row", gap: 8, marginBottom: 12 },
+  filterRow: {
+    flexDirection: "row",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
   pill: {
     backgroundColor: "#e5e7eb",
     paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: radius.full,
   },
-  pillActive: { backgroundColor: "#111827" },
-  pillText: { color: "#374151", fontWeight: "600", fontSize: 13 },
-  pillTextActive: { color: "#fff" },
-  card: {
-    backgroundColor: "#fff",
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 10,
+  pillActive: {
+    backgroundColor: colors.primary,
+  },
+  pillText: {
+    color: colors.textSecondary,
+    fontWeight: "600",
+    fontSize: 13,
+  },
+  pillTextActive: {
+    color: colors.card,
   },
   cardTop: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 6,
+    marginBottom: spacing.xs,
   },
-  plotBadge: { fontSize: 17, fontWeight: "800", color: "#1e3a8a" },
-  statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  openBadge: { backgroundColor: "#fef3c7" },
-  occBadge: { backgroundColor: "#dcfce7" },
-  statusText: { fontSize: 12, fontWeight: "600", color: "#1f2937" },
-  name: { fontSize: 15, fontWeight: "600", color: "#111" },
-  subText: { fontSize: 14, color: "#4b5563", marginTop: 2 },
-  actionRow: { flexDirection: "row", gap: 10, marginTop: 10 },
+  plotBadge: {
+    fontSize: 17,
+    fontWeight: "800",
+    color: colors.primary,
+  },
+  statusBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+    borderRadius: radius.sm,
+  },
+  openBadge: {
+    backgroundColor: colors.warningLight,
+  },
+  occBadge: {
+    backgroundColor: colors.successLight,
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: colors.text,
+  },
+  name: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: colors.text,
+  },
+  subText: {
+    fontSize: 14,
+    color: colors.muted,
+    marginTop: 2,
+  },
+  actionRow: {
+    flexDirection: "row",
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
   callBtn: {
     flex: 1,
-    backgroundColor: "#2563eb",
-    padding: 8,
-    borderRadius: 8,
+    backgroundColor: colors.accent,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
     alignItems: "center",
   },
   waBtn: {
     flex: 1,
-    backgroundColor: "#16a34a",
-    padding: 8,
-    borderRadius: 8,
+    backgroundColor: colors.success,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
     alignItems: "center",
   },
-  actionText: { color: "#fff", fontWeight: "600", fontSize: 13 },
+  actionText: {
+    color: colors.card,
+    fontWeight: "600",
+    fontSize: 13,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(15, 23, 42, 0.55)",
@@ -440,8 +478,8 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 420,
     maxHeight: "85%",
-    backgroundColor: "#FFFFFF",
-    borderRadius: 16,
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
     padding: 20,
     elevation: 8,
     shadowColor: "#000",
@@ -449,59 +487,69 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 12,
   },
-  modalTitle: { fontSize: 18, fontWeight: "700", marginBottom: 12 },
-  label: { fontWeight: "600", marginBottom: 6, color: "#374151" },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
   statusSelector: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 6,
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   statusOption: {
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: colors.border,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: radius.md,
   },
-  statusOptionActive: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  input: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
+  statusOptionActive: {
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
   },
   modalButtons: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    gap: 12,
-    marginTop: 8,
+    gap: spacing.md,
+    marginTop: spacing.sm,
   },
-  cancelBtn: { padding: 10 },
+  cancelBtn: {
+    padding: 10,
+  },
+  cancelText: {
+    color: colors.textSecondary,
+    fontWeight: "600",
+  },
   saveBtn: {
-    backgroundColor: "#2563eb",
+    backgroundColor: colors.accent,
     paddingHorizontal: 18,
     paddingVertical: 10,
-    borderRadius: 8,
+    borderRadius: radius.md,
+  },
+  saveBtnText: {
+    color: colors.card,
+    fontWeight: "600",
   },
   center: {
     flex: 1,
-    backgroundColor: "#f3f4f6",
+    backgroundColor: colors.bg,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: spacing.xl,
   },
   loadingTitle: {
-    marginTop: 12,
+    marginTop: spacing.md,
     fontSize: 16,
     fontWeight: "600",
-    color: "#1f2937",
+    color: colors.text,
   },
   loadingSub: {
     marginTop: 6,
     fontSize: 13,
-    color: "#6b7280",
+    color: colors.muted,
     textAlign: "center",
   },
 });

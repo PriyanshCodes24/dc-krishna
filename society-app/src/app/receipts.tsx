@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   FlatList,
   StyleSheet,
@@ -12,10 +11,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { generateAndShareReceipt, ReceiptData } from "../services/pdfReceipt";
 import { useAuth } from "../context/AuthContext";
+import { AppInput } from "../components/AppInput";
+import { colors, spacing, radius, sharedStyles } from "../theme";
 
 import { API_BASE_URL } from "../config/api";
 
-// Example in index.tsx:
 const API_URL = `${API_BASE_URL}/receipts`;
 
 interface Receipt extends ReceiptData {
@@ -92,12 +92,12 @@ export default function ReceiptsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={sharedStyles.screenContainer}>
       <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
         {isAdmin && (
           <>
             <Text style={styles.header}>Generate Receipt</Text>
-            <View style={styles.formCard}>
+            <View style={sharedStyles.card}>
               <View style={styles.row}>
                 {(["Maintenance", "Donation"] as const).map((cat) => (
                   <TouchableOpacity
@@ -124,26 +124,23 @@ export default function ReceiptsScreen() {
                 ))}
               </View>
 
-              <TextInput
-                style={styles.input}
+              <AppInput
                 placeholder="Plot No (e.g. 14 or A-5)"
                 value={plotNo}
                 onChangeText={setPlotNo}
+                autoCapitalize="characters"
               />
-              <TextInput
-                style={styles.input}
+              <AppInput
                 placeholder="Received From (Name)"
                 value={payerName}
                 onChangeText={setPayerName}
               />
-              <TextInput
-                style={styles.input}
+              <AppInput
                 placeholder="Purpose"
                 value={purpose}
                 onChangeText={setPurpose}
               />
-              <TextInput
-                style={styles.input}
+              <AppInput
                 placeholder="Amount (₹)"
                 keyboardType="numeric"
                 value={amount}
@@ -163,7 +160,10 @@ export default function ReceiptsScreen() {
                     >
                       <Text
                         style={{
-                          color: paymentMode === mode ? "#fff" : "#374151",
+                          color:
+                            paymentMode === mode
+                              ? colors.card
+                              : colors.textSecondary,
                           fontSize: 12,
                           fontWeight: "600",
                         }}
@@ -175,18 +175,19 @@ export default function ReceiptsScreen() {
                 )}
               </View>
 
-              <TextInput
-                style={styles.input}
+              <AppInput
                 placeholder="UPI Ref / Cheque No (Optional)"
                 value={transactionRef}
                 onChangeText={setTransactionRef}
               />
 
               <TouchableOpacity
-                style={styles.submitBtn}
+                style={[sharedStyles.primaryBtn, styles.submitBtn]}
                 onPress={handleCreateAndShare}
               >
-                <Text style={styles.submitText}>Save & Share PDF Receipt</Text>
+                <Text style={sharedStyles.primaryBtnText}>
+                  Save & Share PDF Receipt
+                </Text>
               </TouchableOpacity>
             </View>
           </>
@@ -200,7 +201,7 @@ export default function ReceiptsScreen() {
           scrollEnabled={false}
           keyExtractor={(item: Receipt) => item._id}
           renderItem={({ item }: { item: Receipt }) => (
-            <View style={styles.receiptCard}>
+            <View style={sharedStyles.card}>
               <View style={styles.cardRow}>
                 <Text style={styles.rcpNo}>
                   {item.receiptNo} • Plot {item.plotNo}
@@ -230,77 +231,93 @@ export default function ReceiptsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f3f4f6", paddingHorizontal: 14 },
   header: {
     fontSize: 22,
     fontWeight: "700",
-    marginVertical: 12,
-    color: "#111",
+    marginVertical: spacing.md,
+    color: colors.text,
   },
   subHeader: {
     fontSize: 18,
     fontWeight: "700",
-    marginTop: 16,
-    marginBottom: 8,
-    color: "#111",
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+    color: colors.text,
   },
-  formCard: { backgroundColor: "#fff", padding: 14, borderRadius: 12 },
-  row: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 10 },
+  row: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
   pill: {
     flex: 1,
     backgroundColor: "#e5e7eb",
-    paddingVertical: 8,
-    borderRadius: 8,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.md,
     alignItems: "center",
   },
-  pillActive: { backgroundColor: "#1e3a8a" },
-  pillText: { fontWeight: "600", color: "#374151" },
-  pillTextActive: { color: "#fff" },
+  pillActive: {
+    backgroundColor: colors.primary,
+  },
+  pillText: {
+    fontWeight: "600",
+    color: colors.textSecondary,
+  },
+  pillTextActive: {
+    color: colors.card,
+  },
   modeBtn: {
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: colors.border,
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: radius.md,
   },
-  modeBtnActive: { backgroundColor: "#2563eb", borderColor: "#2563eb" },
-  input: {
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
+  modeBtnActive: {
+    backgroundColor: colors.accent,
+    borderColor: colors.accent,
   },
   submitBtn: {
-    backgroundColor: "#16a34a",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-    marginTop: 4,
-  },
-  submitText: { color: "#fff", fontWeight: "700", fontSize: 15 },
-  receiptCard: {
-    backgroundColor: "#fff",
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 8,
+    backgroundColor: colors.success,
+    marginTop: spacing.xs,
   },
   cardRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  rcpNo: { fontWeight: "700", color: "#1e3a8a", fontSize: 14 },
-  amount: { fontWeight: "800", color: "#16a34a", fontSize: 16 },
-  payer: { fontWeight: "600", color: "#111", marginTop: 2 },
-  meta: { color: "#6b7280", fontSize: 13, marginTop: 2 },
+  rcpNo: {
+    fontWeight: "700",
+    color: colors.primary,
+    fontSize: 14,
+  },
+  amount: {
+    fontWeight: "800",
+    color: colors.success,
+    fontSize: 16,
+  },
+  payer: {
+    fontWeight: "600",
+    color: colors.text,
+    marginTop: 2,
+  },
+  meta: {
+    color: colors.muted,
+    fontSize: 13,
+    marginTop: 2,
+  },
   reShareBtn: {
-    marginTop: 8,
+    marginTop: spacing.sm,
     alignSelf: "flex-start",
-    backgroundColor: "#eff6ff",
+    backgroundColor: colors.primaryLight,
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 6,
+    borderRadius: radius.sm,
   },
-  reShareText: { color: "#1d4ed8", fontWeight: "600", fontSize: 12 },
+  reShareText: {
+    color: colors.primary,
+    fontWeight: "600",
+    fontSize: 12,
+  },
 });
